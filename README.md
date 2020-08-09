@@ -6,6 +6,7 @@ As the name implies, this approach relies on the ideas of parallel transport, me
 The PTU geometric procedure exhibits the same strong resilience to noise as one of the staples of manifold learning, the Isomap algorithm, as it also exploits all pairwise geodesic distances to compute a low-dimensional embedding. While Isomap is limited to geodesically-convex sampled domains, parallel transport unfolding does not suffer from this crippling limitation, resulting in an improved robustness to irregularity and voids in the sampling. Moreover, it involves only simple linear algebra, significantly improves the accuracy of all pairwise geodesic distance approximations, and has the same computational complexity as Isomap.
 
 See the following reference for more details:
+
 **Parallel Transport Unfolding: A Connection-based Manifold Learning Approach.** *Max Budninskiy, Gloria Yin, Leman Feng, Yiying Tong, and Mathieu Desbrun.* SIAM J. Appl. Algebra Geometry, 3(2), pp. 266-291, 2019. ([preprint](http://maxbudninskiy.com/pubs/BYFTD18.pdf))
 
 ## Installation
@@ -20,6 +21,7 @@ python setup.py install
 
 ## Usage
 The core class is `parallel_transport_unfolding.ptu.PTU` is responsible for computing PTU embeddings via method `fit()`. See the following examples for usage and comparison with Isomap:
+
 	- embeddings of 2D manifolds living in 3D: 'irregularS', 'holeyS', 'noisySwiss';
 	- trivial embedding of a 3D manifold into 3D: 'torus' (spoiler: Isomap fails);
 	- embedding of a 2D manifold living in 100D: 'petals'.
