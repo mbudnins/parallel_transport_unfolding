@@ -20,7 +20,7 @@ python setup.py install
 ```
 
 ## Usage
-The core class is `parallel_transport_unfolding.ptu.PTU` is responsible for computing PTU embeddings via method `fit()`. See the following examples for usage and comparison with Isomap:
+The core class is `parallel_transport_unfolding.ptu.PTU` is responsible for computing PTU embeddings via method `fit()`. See the following [examples](https://github.com/mbudnins/parallel_transport_unfolding/blob/master/examples/all_examples.ipynb) for usage and comparison with Isomap:
 
 	- embeddings of 2D manifolds living in 3D: 'irregularS', 'holeyS', 'noisySwiss';
 	- trivial embedding of a 3D manifold into 3D: 'torus' (spoiler: Isomap fails);
