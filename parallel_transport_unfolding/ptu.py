@@ -45,13 +45,6 @@ class PTU():
             embedding_dim,
             verbose=False,
             n_jobs=None):
-        assert (
-            (n_neighbors is None) or
-            (geod_n_neighbors >= n_neighbors)
-        ), \
-            'geod_nneighbors must be >= n_neighbors'
-        assert X.shape[1] >= embedding_dim, \
-               'embedding_dim must be <= ambient dimension of data X.shape[1]'
         self.X = X
         self.n_neighbors = n_neighbors
         self.geod_n_neighbors = geod_n_neighbors
@@ -61,6 +54,7 @@ class PTU():
         self.n_jobs = n_jobs
         self.Embedding = None
         self.initialize_logger(verbose)
+        self.validate_dimensions()
 
     @classmethod
     def with_custom_graph(
@@ -101,6 +95,38 @@ class PTU():
         else:
             logger.setLevel(logging.ERROR)
         self.logger = logger
+
+    def validate_dimensions(self):
+        """
+        Validates input parameters related to dimensions
+        """
+        if self.X.shape[1] < self.embedding_dim:
+            raise ValueError(
+                "Embedding dimension must be less or equal to the ambient "
+                "dimension of input data"
+            )
+        if self.geod_n_neighbors >= self.X.shape[0]:
+            raise ValueError(
+                "Geodesic neighborhood size must be less than the "
+                "total number of samples"
+            )
+        if ((self.n_neighbors is not None) and
+                (self.n_neighbors >= self.X.shape[0])):
+            raise ValueError(
+                "kNN neighborhood size must be less than the "
+                "total number of samples"
+            )
+        if ((self.n_neighbors is not None) and
+                (self.geod_n_neighbors < self.n_neighbors)):
+            raise ValueError(
+                "Geodesic neighborhood size should be larger or equal to the "
+                "n_neighbors"
+            )
+        if self.geod_n_neighbors < self.embedding_dim:
+            raise ValueError(
+                "Geodesic neighborhood size must be larger or equal to the "
+                "embedding dimension"
+            )
 
     def fit(self):
         """

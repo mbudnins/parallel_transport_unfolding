@@ -205,7 +205,7 @@ def plot_S(
 
     f = plt.figure(figsize=(30, 15))
 
-    ax = f.add_subplot(221,  projection='3d', aspect='equal')
+    ax = f.add_subplot(221,  projection='3d', aspect='auto')
     ax.title.set_text('Input 3D data')
     ax.elev = 14
     ax.azim = -70
@@ -285,14 +285,14 @@ def plot_torus(
 
     f = plt.figure(figsize=(30, 15))
 
-    ax = f.add_subplot(131,  projection='3d', aspect='equal')
+    ax = f.add_subplot(131,  projection='3d', aspect='auto')
     ax.title.set_text('Input 3D data')
     ax.elev = 70
     ax.azim = 5
     ax.scatter(exact[:, 0], exact[:, 1], exact[:, 2], c=exact[:, 1],
                cmap='viridis', s=50, edgecolors='k')
 
-    ax = f.add_subplot(132,  projection='3d', aspect='equal')
+    ax = f.add_subplot(132,  projection='3d', aspect='auto')
     ax.title.set_text('PTU embedding ({} colormap), {}s'
                       .format(hue, ptu_time))
     ax.elev = 70
@@ -301,7 +301,7 @@ def plot_torus(
                     c=ptu_hue, cmap=cmap, norm=norm, s=50, edgecolors='k')
     plt.colorbar(im, orientation='vertical', fraction=0.046, pad=0.04)
 
-    ax = f.add_subplot(133,  projection='3d', aspect='equal')
+    ax = f.add_subplot(133,  projection='3d', aspect='auto')
     ax.title.set_text('Isomap embedding ({} colormap), {}s'
                       .format(hue, isomap_time))
     ax.elev = 70
@@ -342,7 +342,7 @@ def plot_petals(P, ptu, iso, ptu_time, isomap_time):
     julia = julia_set()
     plt.imshow(julia, cmap='hot')
 
-    ax = f.add_subplot(222,  projection='3d', aspect='equal')
+    ax = f.add_subplot(222,  projection='3d', aspect='auto')
     ax.title.set_text('3D isometric parametrization of input data')
     ax.elev = 14
     ax.azim = -50
@@ -384,7 +384,7 @@ def plot_swiss(X, ptu, iso, ptu_time, isomap_time, colors):
     """
     f = plt.figure(figsize=(30, 20))
 
-    ax = f.add_subplot(131,  projection='3d', aspect='equal')
+    ax = f.add_subplot(131,  projection='3d', aspect='auto')
     ax.title.set_text('Input 3D data')
     ax.elev = 10
     ax.azim = 70

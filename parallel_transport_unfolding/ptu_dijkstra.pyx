@@ -78,8 +78,21 @@ def ptu_dijkstra(X,
     cdef ITYPE_t D_t = D
     cdef ITYPE_t d_t = d
 
-    assert K <= N
-    assert d <= D
+    if K >= N:
+        raise ValueError(
+            "Geodesic neighborhood size must be less than the "
+            "total number of samples"
+        )
+    if K < d:
+        raise ValueError(
+            "Geodesic neighborhood size must be larger or equal to the "
+            "embedding dimension"
+        )
+    if D < d:
+        raise ValueError(
+            "Embedding dimension must be less or equal to the ambient "
+            "dimension of input data"
+        )
 
     csgraph = validate_graph(csgraph, directed=True, dtype=DTYPE,
                              dense_output=False)
@@ -102,7 +115,7 @@ def ptu_dijkstra(X,
     graph_indices = symmetrized_graph.indices
     graph_indptr = symmetrized_graph.indptr
 
-    _geodesic_neigborhood_tangents(
+    tangents_status = _geodesic_neigborhood_tangents(
             X,
             graph_data,
             graph_indices,
@@ -113,22 +126,31 @@ def ptu_dijkstra(X,
             D_t,
             d_t
     )
-
-    _parallel_transport_dijkstra(
-        X,
-        graph_data,
-        graph_indices,
-        graph_indptr,
-        ptu_dists,
-        tangents,
-        predecessors,
-        N_t,
-        D_t,
-        d_t
-    )
-    if return_predecessors:
-        return ptu_dists, predecessors
-    return ptu_dists
+    if tangents_status == -1:
+        raise RuntimeError(
+            'Local tangent space approximation failed, at least one geodesic '
+            'neighborhood does not span d-dimensional space'
+        )
+    elif tangents_status == 1:
+        _parallel_transport_dijkstra(
+            X,
+            graph_data,
+            graph_indices,
+            graph_indptr,
+            ptu_dists,
+            tangents,
+            predecessors,
+            N_t,
+            D_t,
+            d_t
+        )
+        if return_predecessors:
+            return ptu_dists, predecessors
+        return ptu_dists
+    else:
+        raise RuntimeError(
+            'Local tangent space approximation failed'
+        )
 
 
 @cython.boundscheck(False)
@@ -319,8 +341,8 @@ cdef _parallel_transport_dijkstra(
                 ptu_dists[i, j] = path_norm
 
                 # TtT = jTangent^T iTangentPred
-                for k in range(0, d):
-                    for q in range(0, d):
+                for q in range(0, d):
+                    for k in range(0, d):
                         temp = 0
                         for p in range(0, D):
                             temp += jTangent[p, k] * iTangentPred[p, q]
@@ -384,7 +406,7 @@ cdef _parallel_transport_dijkstra(
 @cython.wraparound(False)
 @cython.nonecheck(False)
 @cython.cdivision(True)
-cdef _geodesic_neigborhood_tangents(
+cdef int _geodesic_neigborhood_tangents(
             double[:, :] X,
             double[:] csr_weights,
             int[:] csr_indices,
@@ -507,11 +529,14 @@ cdef _geodesic_neigborhood_tangents(
         )
 
         # d left singular vectors form a basis for tangent space at point i
-        for p in range(D):
-            for q in range(d):
+        for q in range(d):
+            if S[q] < 1e-10:
+                return -1
+            for p in range(D):
                 tangents[i, p, q] = U[p, q]
 
     free(nodes)
+    return 1
 
 ######################################################################
 # FibonacciNode structure
